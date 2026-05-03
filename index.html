@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Auth UI</title>
+<link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+<style>
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif}
+
+/* ===== BODY ===== */
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#334155 100%);
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* ANIMATED BACKGROUND */
+body::before{
+  content:"";
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(0,198,255,0.18) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(147,51,234,0.18) 0%, transparent 40%);
+  animation:bgPulse 15s ease-in-out infinite;
+  z-index:-1;
+}
+
+/* FLOATING SPARKLES - GUARANTEED VISIBLE */
+body::after {
+  content:"";
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:
+    radial-gradient(4px 4px at 25px 50px, #bedde3, transparent),
+    radial-gradient(3px 3px at 90px 90px, #e3d4ef, transparent),
+    radial-gradient(5px 5px at 70% 30%, #f4efe2, transparent),
+    radial-gradient(2px 2px at 40% 70%, #b4dee780, transparent);
+  background-repeat:repeat;
+  background-size:180px 250px;
+  animation:sparkleMove 25s linear infinite;
+  z-index:-1;
+  opacity:0.85;
+}
+
+@keyframes bgPulse {0%,100%{opacity:0.6;transform:scale(1);}50%{opacity:1;transform:scale(1.03);}}
+@keyframes sparkleMove {0%{transform:translateY(0px) rotate(0deg);}100%{transform:translateY(-60px) rotate(360deg);}}
+@keyframes floatParticles {to{transform:translateY(-20px) rotate(360deg);}}
+
+/* ===== LAYOUT ===== */
+.layout{display:flex;min-height:100vh;}
+
+/* ===== LEFT PANEL ===== */
+.left-panel{
+  flex:1;padding:70px 60px;display:flex;flex-direction:column;justify-content:center;
+  background:rgba(255,255,255,0.06);backdrop-filter:blur(25px);
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+
+.left-panel h1{
+  font-size:clamp(2.8rem,6vw,4.5rem);
+  background:linear-gradient(135deg,#00c6ff,#60d8ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:18px;font-weight:800;
+}
+
+.left-panel p{color:#cbd5f5;font-size:1.2rem;margin-bottom:30px;}
+.left-panel li{margin:12px 0;color:#e2e8f0;list-style:none;}
+
+/* ===== RIGHT SIDE ===== */
+.container{
+  flex:1;display:flex;justify-content:center;align-items:center;padding:20px;
+}
+
+/* ===== CARD ===== */
+.card{
+  width:100%;max-width:420px;padding:45px 30px;border-radius:24px;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(30px);
+  box-shadow:0 25px 60px rgba(0,0,0,0.4);
+}
+
+/* ===== TABS ===== */
+input[type="radio"]{display:none;}
+.tabs{
+  display:flex;margin-bottom:30px;background:rgba(255,255,255,0.1);
+  border-radius:18px;padding:6px;
+}
+.tabs label{
+  flex:1;text-align:center;padding:14px;cursor:pointer;color:#94a3b8;
+  font-weight:600;border-radius:12px;transition:0.3s ease;
+}
+.tabs label:hover{transform:scale(1.02);background:rgba(255,255,255,0.15);color:#fff;}
+#loginTab:checked ~ .tabs label[for="loginTab"],
+#registerTab:checked ~ .tabs label[for="registerTab"]{
+  background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff;
+  box-shadow:0 4px 15px rgba(0,198,255,0.4);
+}
+
+/* ===== FORMS ===== */
+.form{display:none;}
+#loginTab:checked ~ .forms #loginForm,
+#registerTab:checked ~ .forms #registerForm{display:block;}
+
+/* ===== INPUT ===== */
+.input-box{position:relative;margin-bottom:28px;}
+.input-box input{
+  width:100%;padding:20px 50px 20px 20px;border:2px solid rgba(255,255,255,0.2);
+  border-radius:16px;background:rgba(255,255,255,0.08);color:#fff;
+  font-size:1.05rem;transition:all 0.3s ease;
+}
+.input-box input::placeholder{
+  color:#e2e8f0 !important;opacity:1;font-weight:500;
+}
+.input-box input:focus{
+  outline:none;border-color:#00c6ff;
+  box-shadow:0 0 0 4px rgba(0,198,255,0.2),0 8px 25px rgba(0,198,255,0.3);
+  transform:translateY(-2px);background:rgba(255,255,255,0.12);
+}
+.input-box input:focus::placeholder{opacity:0;}
+.input-box i{
+  position:absolute;right:15px;top:50%;transform:translateY(-50%);
+  cursor:pointer;color:#94a3b8;font-size:22px;transition:0.3s ease;
+}
+.input-box i:hover{color:#00c6ff;transform:translateY(-50%) scale(1.1);}
+
+/* ===== BUTTON ===== */
+.btn{
+  width:100%;padding:18px;border:none;border-radius:16px;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);color:#fff;
+  font-size:1.1rem;font-weight:600;cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  box-shadow:0 6px 20px rgba(0,198,255,0.3);
+}
+.btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 35px rgba(0,198,255,0.5);
+}
+
+/* ===== LINK ===== */
+.link{text-align:center;margin-top:20px;font-size:1.05rem;}
+.link label{
+  color:#60d8ff !important;cursor:pointer;font-weight:500;
+  transition:0.3s ease;
+}
+.link label:hover{color:#a5f3ff;text-shadow:0 0 10px rgba(96,216,255,0.6);}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .layout{flex-direction:column;}
+  .left-panel{padding:40px 25px;}
+  .card{padding:35px 25px;max-width:100%;}
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <h1>Welcome</h1>
+    <p>Modern UI Authentication</p>
+    <ul>
+      <li>✔ Secure Login</li>
+      <li>✔ Responsive</li>
+      <li>✔ Clean Design</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="container">
+    <div class="card">
+      <input type="radio" name="tab" id="loginTab" checked>
+      <input type="radio" name="tab" id="registerTab">
+
+      <div class="tabs">
+        <label for="loginTab">Login</label>
+        <label for="registerTab">Register</label>
+      </div>
+
+      <div class="forms">
+        <!-- LOGIN -->
+        <form id="loginForm" class="form">
+          <div class="input-box">
+            <input type="text" placeholder="Username" required>
+          </div>
+          <div class="input-box">
+            <input type="password" id="loginPass" placeholder="Password" required>
+            <i class='bx bx-hide' onclick="togglePwd('loginPass',this)"></i>
+          </div>
+          <button class="btn">Login</button>
+          <div class="link">
+            Don't have account? <label for="registerTab">Create account</label>
+          </div>
+        </form>
+
+        <!-- REGISTER -->
+        <form id="registerForm" class="form">
+          <div class="input-box">
+            <input type="text" placeholder="Full Name" required>
+          </div>
+          <div class="input-box">
+            <input type="email" placeholder="Email" required>
+          </div>
+          <div class="input-box">
+            <input type="password" id="regPass" placeholder="Password" required>
+            <i class='bx bx-hide' onclick="togglePwd('regPass',this)"></i>
+          </div>
+          <div class="input-box">
+            <input type="password" id="confirmPass" placeholder="Confirm Password" required>
+            <i class='bx bx-hide' onclick="togglePwd('confirmPass',this)"></i>
+          </div>
+          <button class="btn">Register</button>
+          <div class="link">
+            Already have account? <label for="loginTab">Login</label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePwd(id,icon){
+  let i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+  icon.classList.toggle('bx-show');
+  icon.classList.toggle('bx-hide');
+}
+</script>
+</body>
+</html>
